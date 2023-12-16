@@ -1,7 +1,7 @@
 import connectDatabase from "./Config/dbConfig";
 import AuthenticationField from "./Enums/AuthenticationField";
 import ValidationHelper from "./Helpers/ValidationHelper";
-import AuthenticationBody from "./Interfaces/AuthenticationBody";
+import { SignupAuthenticationBody } from "./Interfaces/AuthenticationBody";
 import AuthenticationOptions from "./Interfaces/AuthenticationOptions";
 import {
   AuthenticationFailure,
@@ -27,30 +27,22 @@ export class NodeAuthentication {
     connectDatabase(this.databaseURL);
   }
   public async userSignupWithEmailAndPassword(
-    authBody: AuthenticationBody
+    authBody: SignupAuthenticationBody
   ): Promise<Object> {
     return new Promise(async (resolve, reject) => {
       let failure = new AuthenticationFailure();
       try {
-        if (
-          this.authenticationOptions.authenticationField !=
-          AuthenticationField.email
-        ) {
-          failure.setErrorCode("auth/fld-inv");
+        if (!authBody.email) {
+          failure.setErrorCode("auth/fld-abs");
           return reject(failure.toObject());
         }
-
-        if (
-          (!this.authenticationOptions.name && authBody.name) ||
-          (!this.authenticationOptions.phone && authBody.phone) ||
-          (this.authenticationOptions.name && !authBody.name) ||
-          (this.authenticationOptions.phone && !authBody.phone)
-        ) {
-          failure.setErrorCode("auth/cnf-inv");
-          return reject(failure.toObject());
-        }
-
         const validation = new ValidationHelper();
+
+        const authBodyFailure: AuthenticationFailure =
+          validation.validateAuthBody(this.authenticationOptions, authBody);
+        if (!authBodyFailure.getStatus()) {
+          return reject(authBodyFailure.toObject());
+        }
 
         const passwordIsValid: boolean = validation.validatePassword(
           authBody.password
@@ -60,9 +52,7 @@ export class NodeAuthentication {
           return reject(failure.toObject());
         }
 
-        const emailIsValid: boolean = validation.validateEmail(
-          authBody.authenticationFieldValue
-        );
+        const emailIsValid: boolean = validation.validateEmail(authBody.email!);
         if (!emailIsValid) {
           failure.setErrorCode("auth/em-inv");
           return reject(failure.toObject());
@@ -78,7 +68,7 @@ export class NodeAuthentication {
 
         const emailIsVerified: boolean | null = this.authenticationOptions
           .verification
-          ? validation.verifyEmail(authBody.authenticationFieldValue)
+          ? validation.verifyEmail(authBody.email!)
           : null;
         if (this.authenticationOptions.verification && !emailIsVerified) {
           failure.setErrorCode("auth/em-ver");
@@ -86,7 +76,7 @@ export class NodeAuthentication {
         }
 
         const emailExists = await UserModel.findOne({
-          field: authBody.authenticationFieldValue,
+          field: authBody.email!,
         });
         if (emailExists) {
           failure.setErrorCode("auth/em-ex");
@@ -96,13 +86,13 @@ export class NodeAuthentication {
         const pwdHash = hashSync(authBody.password, 10);
 
         const user: HydratedDocument<User> = await UserModel.create({
-          field: authBody.authenticationFieldValue,
+          field: authBody.email!,
           password: pwdHash,
           name: authBody.name,
           phone: authBody.phone,
         });
         let success = new AuthenticationSuccess(user);
-        return resolve(success.toObject());
+        return resolve({});
       } catch (error) {
         failure.setErrorCode("srv");
         return reject(failure.toObject());

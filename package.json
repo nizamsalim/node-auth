@@ -4,7 +4,6 @@
   "description": "NPM package for simple authentication",
   "main": "index.ts",
   "scripts": {
-    "test": "nodemon Test/testScript.js",
     "build": "npx tsc",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "start": "node dist/index.js"

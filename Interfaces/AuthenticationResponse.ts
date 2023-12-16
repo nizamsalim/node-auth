@@ -52,4 +52,10 @@ export class AuthenticationFailure {
       },
     };
   }
+  public getStatus(): boolean {
+    return this.success;
+  }
+  public setStatus() {
+    this.success = true;
+  }
 }

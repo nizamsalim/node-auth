@@ -1,3 +1,9 @@
+import { AuthenticationFailure } from "../Interfaces/index";
+import {
+  AuthenticationOptions,
+  SignupAuthenticationBody,
+} from "../Interfaces/index";
+
 export default class ValidationHelper {
   public validateEmail(inputStr: string): boolean {
     const re =
@@ -16,5 +22,38 @@ export default class ValidationHelper {
 
   public verifyEmail(email: String): boolean {
     return true;
+  }
+
+  public validateAuthBody(
+    authOpts: AuthenticationOptions,
+    authBody: SignupAuthenticationBody
+  ): AuthenticationFailure {
+    let failure = new AuthenticationFailure();
+    if (authOpts.name && !authBody.name) {
+      failure.setErrorCode("auth/nm-abs");
+      return failure;
+    }
+    if (authOpts.phone && !authBody.phone) {
+      failure.setErrorCode("auth/ph-abs");
+      return failure;
+    }
+    if (authOpts.username && !authBody.username) {
+      failure.setErrorCode("auth/unm-abs");
+      return failure;
+    }
+    if (!authOpts.name && authBody.name) {
+      failure.setErrorCode("auth/nmcnf-inv");
+      return failure;
+    }
+    if (!authOpts.phone && authBody.phone) {
+      failure.setErrorCode("auth/phcnf-inv");
+      return failure;
+    }
+    if (!authOpts.username && authBody.username) {
+      failure.setErrorCode("auth/unmcnf-inv");
+      return failure;
+    }
+    failure.setStatus();
+    return failure;
   }
 }

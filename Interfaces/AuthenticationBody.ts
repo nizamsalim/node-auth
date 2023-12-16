@@ -1,8 +1,11 @@
 import { AuthenticationField } from "../Enums";
 
-export default interface AuthenticationBody {
-  authenticationFieldValue: string;
+export interface SignupAuthenticationBody {
+  email?: string;
+  username?: string;
   password: string;
   phone?: string;
   name?: string;
 }
+
+export interface LoginAuthenticationBody {}

@@ -49,5 +49,11 @@ class AuthenticationFailure {
             },
         };
     }
+    getStatus() {
+        return this.success;
+    }
+    setStatus() {
+        this.success = true;
+    }
 }
 exports.AuthenticationFailure = AuthenticationFailure;

@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TestClass = exports.NodeAuthentication = void 0;
 const dbConfig_1 = __importDefault(require("./Config/dbConfig"));
-const AuthenticationField_1 = __importDefault(require("./Enums/AuthenticationField"));
 const ValidationHelper_1 = __importDefault(require("./Helpers/ValidationHelper"));
 const AuthenticationResponse_1 = require("./Interfaces/AuthenticationResponse");
 const UserModel_1 = __importDefault(require("./Models/UserModel"));
@@ -33,25 +32,21 @@ class NodeAuthentication {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 let failure = new AuthenticationResponse_1.AuthenticationFailure();
                 try {
-                    if (this.authenticationOptions.authenticationField !=
-                        AuthenticationField_1.default.email) {
-                        failure.setErrorCode("auth/fld-inv");
-                        return reject(failure.toObject());
-                    }
-                    if ((!this.authenticationOptions.name && authBody.name) ||
-                        (!this.authenticationOptions.phone && authBody.phone) ||
-                        (this.authenticationOptions.name && !authBody.name) ||
-                        (this.authenticationOptions.phone && !authBody.phone)) {
-                        failure.setErrorCode("auth/cnf-inv");
+                    if (!authBody.email) {
+                        failure.setErrorCode("auth/fld-abs");
                         return reject(failure.toObject());
                     }
                     const validation = new ValidationHelper_1.default();
+                    const authBodyFailure = validation.validateAuthBody(this.authenticationOptions, authBody);
+                    if (!authBodyFailure.getStatus()) {
+                        return reject(authBodyFailure.toObject());
+                    }
                     const passwordIsValid = validation.validatePassword(authBody.password);
                     if (!passwordIsValid) {
                         failure.setErrorCode("auth/pwd-inv");
                         return reject(failure.toObject());
                     }
-                    const emailIsValid = validation.validateEmail(authBody.authenticationFieldValue);
+                    const emailIsValid = validation.validateEmail(authBody.email);
                     if (!emailIsValid) {
                         failure.setErrorCode("auth/em-inv");
                         return reject(failure.toObject());
@@ -65,29 +60,28 @@ class NodeAuthentication {
                     }
                     const emailIsVerified = this.authenticationOptions
                         .verification
-                        ? validation.verifyEmail(authBody.authenticationFieldValue)
+                        ? validation.verifyEmail(authBody.email)
                         : null;
                     if (this.authenticationOptions.verification && !emailIsVerified) {
                         failure.setErrorCode("auth/em-ver");
                         return reject(failure.toObject());
                     }
                     const emailExists = yield UserModel_1.default.findOne({
-                        field: authBody.authenticationFieldValue,
+                        field: authBody.email,
                     });
                     if (emailExists) {
                         failure.setErrorCode("auth/em-ex");
                         return reject(failure.toObject());
                     }
-                    console.log("flag");
                     const pwdHash = (0, bcrypt_1.hashSync)(authBody.password, 10);
                     const user = yield UserModel_1.default.create({
-                        field: authBody.authenticationFieldValue,
+                        field: authBody.email,
                         password: pwdHash,
                         name: authBody.name,
                         phone: authBody.phone,
                     });
                     let success = new AuthenticationResponse_1.AuthenticationSuccess(user);
-                    return resolve(success.toObject());
+                    return resolve({});
                 }
                 catch (error) {
                     failure.setErrorCode("srv");
