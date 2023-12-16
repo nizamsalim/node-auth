@@ -1,13 +1,4 @@
-// const AuthenticdationErrors = {
-//   "auth/fld-inv":
-//     "Authentication field in configuration does not match with authentication field in request body.",
-//   "auth/em-ex": "User with the given email already exists.",
-//   "auth/ph-inv": "The given phone number is not valid.",
-//   "auth/em-inv": "The given email address is not valid.",
-//   "auth/em-ver": "The given email address has not been verified.",
-// } as Map<string,string>
-
-let AuthenticationErrors = new Map<string, string>([
+export let AuthenticationErrors = new Map<string, string>([
   [
     "auth/fld-inv",
     "Authentication field in configuration does not match with authentication field in request body.",
@@ -34,6 +25,25 @@ let AuthenticationErrors = new Map<string, string>([
     "auth/unmcnf-inv",
     "Username field is not set in configuration but is given in the request body",
   ],
+  ["auth/usr-nf", "User does not exist"],
+  ["auth/pwd-inc", "Incorrect password"],
 ]);
 
-export default AuthenticationErrors;
+export const AuthenticationErrorCodes = {
+  INVALID_FIELD: "auth/fld-inv",
+  EMAIL_EXISTS: "auth/em-ex",
+  INVALID_PHONE: "auth/ph-inv",
+  INVALID_EMAIL: "auth/em-inv",
+  UNVERIFIED_USER: "auth/em-ver",
+  WEAK_PASSWORD: "auth/pwd-inv",
+  SERVICE_ERROR: "srv",
+  MISSING_EMAIL: "auth/em-abs",
+  MISSING_NAME: "auth/nm-abs",
+  MISSING_PHONE: "auth/ph-abs",
+  MISSING_USERNAME: "auth/unm-abs",
+  NAME_CNF_MISMATCH: "auth/nmcnf-inv",
+  PHONE_CNF_MISMATCH: "auth/phcnf-inv",
+  USERNAME_CNF_MISMATCH: "auth/unmcnf-inv",
+  USER_NOT_FOUND: "auth/usr-nf",
+  INCORRECT_PASSWORD: "auth/pwd-inc",
+};

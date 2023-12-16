@@ -1,7 +1,8 @@
-import { AuthenticationFailure } from "../Interfaces/index";
+import { AuthenticationErrorCodes } from "../Enums/index";
 import {
   AuthenticationOptions,
   SignupAuthenticationBody,
+  AuthenticationFailure,
 } from "../Interfaces/index";
 
 export default class ValidationHelper {
@@ -30,27 +31,27 @@ export default class ValidationHelper {
   ): AuthenticationFailure {
     let failure = new AuthenticationFailure();
     if (authOpts.name && !authBody.name) {
-      failure.setErrorCode("auth/nm-abs");
+      failure.setErrorCode(AuthenticationErrorCodes.MISSING_NAME);
       return failure;
     }
     if (authOpts.phone && !authBody.phone) {
-      failure.setErrorCode("auth/ph-abs");
+      failure.setErrorCode(AuthenticationErrorCodes.MISSING_PHONE);
       return failure;
     }
     if (authOpts.username && !authBody.username) {
-      failure.setErrorCode("auth/unm-abs");
+      failure.setErrorCode(AuthenticationErrorCodes.MISSING_USERNAME);
       return failure;
     }
     if (!authOpts.name && authBody.name) {
-      failure.setErrorCode("auth/nmcnf-inv");
+      failure.setErrorCode(AuthenticationErrorCodes.NAME_CNF_MISMATCH);
       return failure;
     }
     if (!authOpts.phone && authBody.phone) {
-      failure.setErrorCode("auth/phcnf-inv");
+      failure.setErrorCode(AuthenticationErrorCodes.PHONE_CNF_MISMATCH);
       return failure;
     }
     if (!authOpts.username && authBody.username) {
-      failure.setErrorCode("auth/unmcnf-inv");
+      failure.setErrorCode(AuthenticationErrorCodes.USERNAME_CNF_MISMATCH);
       return failure;
     }
     failure.setStatus();

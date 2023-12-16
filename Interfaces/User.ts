@@ -1,13 +1,15 @@
-export default interface User {
+export interface User {
   name?: string;
-  field: string;
+  email: string;
   password: string;
   phone?: string;
+  username?: string;
 }
 
 export interface ResponseUser {
   name?: string;
-  field: string;
+  email: string;
   _id: string;
   phone?: string;
+  username?: string;
 }

@@ -1,6 +1,6 @@
 import { HydratedDocument } from "mongoose";
 import { AuthenticationErrors } from "../Enums/index";
-import User, { ResponseUser } from "./User";
+import { User, ResponseUser } from "./User";
 import { sign } from "jsonwebtoken";
 
 export class AuthenticationSuccess {
@@ -11,15 +11,20 @@ export class AuthenticationSuccess {
     this.user = {
       _id: user._id.toString(),
       name: user.name,
-      field: user.field,
+      email: user.email,
       phone: user.phone,
+      username: user.username,
     };
+    this.user.name == undefined && delete this.user["name"];
+    this.user.phone == undefined && delete this.user["phone"];
+    this.user.username == undefined && delete this.user["username"];
+
     this.getAuthToken();
   }
   private getAuthToken() {
     const payload = {
       _id: this.user!._id,
-      field: this.user!.field,
+      email: this.user!.email,
     };
     const JWT_KEY =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890987654321";

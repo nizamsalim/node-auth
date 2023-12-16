@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("../Interfaces/index");
+const index_1 = require("../Enums/index");
+const index_2 = require("../Interfaces/index");
 class ValidationHelper {
     validateEmail(inputStr) {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -17,29 +18,29 @@ class ValidationHelper {
         return true;
     }
     validateAuthBody(authOpts, authBody) {
-        let failure = new index_1.AuthenticationFailure();
+        let failure = new index_2.AuthenticationFailure();
         if (authOpts.name && !authBody.name) {
-            failure.setErrorCode("auth/nm-abs");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.MISSING_NAME);
             return failure;
         }
         if (authOpts.phone && !authBody.phone) {
-            failure.setErrorCode("auth/ph-abs");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.MISSING_PHONE);
             return failure;
         }
         if (authOpts.username && !authBody.username) {
-            failure.setErrorCode("auth/unm-abs");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.MISSING_USERNAME);
             return failure;
         }
         if (!authOpts.name && authBody.name) {
-            failure.setErrorCode("auth/nmcnf-inv");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.NAME_CNF_MISMATCH);
             return failure;
         }
         if (!authOpts.phone && authBody.phone) {
-            failure.setErrorCode("auth/phcnf-inv");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.PHONE_CNF_MISMATCH);
             return failure;
         }
         if (!authOpts.username && authBody.username) {
-            failure.setErrorCode("auth/unmcnf-inv");
+            failure.setErrorCode(index_1.AuthenticationErrorCodes.USERNAME_CNF_MISMATCH);
             return failure;
         }
         failure.setStatus();

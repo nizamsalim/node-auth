@@ -1,4 +1,7 @@
 import AuthenticationField from "./AuthenticationField";
-import AuthenticationErrors from "./AuthenticationErrors";
+import {
+  AuthenticationErrors,
+  AuthenticationErrorCodes,
+} from "./AuthenticationErrors";
 
-export { AuthenticationField, AuthenticationErrors };
+export { AuthenticationField, AuthenticationErrors, AuthenticationErrorCodes };

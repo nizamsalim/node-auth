@@ -9,15 +9,19 @@ class AuthenticationSuccess {
         this.user = {
             _id: user._id.toString(),
             name: user.name,
-            field: user.field,
+            email: user.email,
             phone: user.phone,
+            username: user.username,
         };
+        this.user.name == undefined && delete this.user["name"];
+        this.user.phone == undefined && delete this.user["phone"];
+        this.user.username == undefined && delete this.user["username"];
         this.getAuthToken();
     }
     getAuthToken() {
         const payload = {
             _id: this.user._id,
-            field: this.user.field,
+            email: this.user.email,
         };
         const JWT_KEY = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890987654321";
         const authToken = (0, jsonwebtoken_1.sign)(payload, JWT_KEY);
