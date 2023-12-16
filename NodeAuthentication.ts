@@ -148,4 +148,36 @@ export class NodeAuthentication {
       }
     });
   }
+
+  public async userLoginWithUsernameAndPassword(
+    authBody: LoginAuthenticationBody
+  ): Promise<Object> {
+    return new Promise(async (resolve, reject) => {
+      let failure = new AuthenticationFailure();
+      try {
+        let user: HydratedDocument<User> | null = await UserModel.findOne({
+          username: authBody.authenticationField,
+        });
+        if (!user) {
+          failure.setErrorCode(AuthenticationErrorCodes.USER_NOT_FOUND);
+          return reject(failure.toObject());
+        }
+
+        const passwordMatch: boolean = compareSync(
+          authBody.password,
+          user.password
+        );
+        if (!passwordMatch) {
+          failure.setErrorCode(AuthenticationErrorCodes.INCORRECT_PASSWORD);
+          return reject(failure.toObject());
+        }
+
+        let success = new AuthenticationSuccess(user);
+        return resolve(success.toObject());
+      } catch (error) {
+        failure.setErrorCode(AuthenticationErrorCodes.SERVICE_ERROR);
+        return reject(failure.toObject());
+      }
+    });
+  }
 }

@@ -125,5 +125,32 @@ class NodeAuthentication {
             }));
         });
     }
+    userLoginWithUsernameAndPassword(authBody) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                let failure = new index_1.AuthenticationFailure();
+                try {
+                    let user = yield UserModel_1.default.findOne({
+                        username: authBody.authenticationField,
+                    });
+                    if (!user) {
+                        failure.setErrorCode(index_2.AuthenticationErrorCodes.USER_NOT_FOUND);
+                        return reject(failure.toObject());
+                    }
+                    const passwordMatch = (0, bcrypt_1.compareSync)(authBody.password, user.password);
+                    if (!passwordMatch) {
+                        failure.setErrorCode(index_2.AuthenticationErrorCodes.INCORRECT_PASSWORD);
+                        return reject(failure.toObject());
+                    }
+                    let success = new index_1.AuthenticationSuccess(user);
+                    return resolve(success.toObject());
+                }
+                catch (error) {
+                    failure.setErrorCode(index_2.AuthenticationErrorCodes.SERVICE_ERROR);
+                    return reject(failure.toObject());
+                }
+            }));
+        });
+    }
 }
 exports.NodeAuthentication = NodeAuthentication;

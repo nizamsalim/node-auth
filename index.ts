@@ -12,20 +12,36 @@ const auth = new NodeAuthentication(DB_URI, {
   name: true,
 });
 
-const login = () => {
-  auth
-    .userLoginWithEmailAndPassword({
-      authenticationField: "nizam@gm.com",
-      password: "nizam123",
-    })
-    .then(
-      (res) => {
-        console.log(res);
-      },
-      (res) => {
-        console.log(res);
-      }
-    );
+const login = (a: number) => {
+  if (a == 0) {
+    auth
+      .userLoginWithEmailAndPassword({
+        authenticationField: "nizam@gm.com",
+        password: "nizam123",
+      })
+      .then(
+        (res) => {
+          console.log(res);
+        },
+        (res) => {
+          console.log(res);
+        }
+      );
+  } else if (a == 1) {
+    auth
+      .userLoginWithUsernameAndPassword({
+        authenticationField: "nizamsalim",
+        password: "nizam123",
+      })
+      .then(
+        (res) => {
+          console.log(res);
+        },
+        (res) => {
+          console.log(res);
+        }
+      );
+  }
 };
 
 const signup = () => {
@@ -43,8 +59,8 @@ const signup = () => {
     });
 };
 
-signup();
-// login();
+// signup();
+login(1);
 
 export default NodeAuthentication;
 
